@@ -1,5 +1,9 @@
 # Oxycarbide 一站式服务器管理
 
+![Minecraft](https://img.shields.io/badge/Minecraft-Java%20Edition-brightgreen)
+![Fabric](https://img.shields.io/badge/Fabric-26.3-orange)
+![License](https://img.shields.io/badge/License-MIT-blue)
+
 [English](README.md) | **简体中文**
 
 Oxycarbide 是面向高版本 Minecraft 服务端的服务器管理模组，为玩家和管理员提供了许多实用指令和功能。
