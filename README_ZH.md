@@ -17,6 +17,8 @@ Oxycarbide 是面向高版本 Minecraft 服务端的服务器管理模组，为�
 
 若发现任何功能性问题，或是要提出建议，请提交[issues](https://github.com/EndDream1227/Oxycarbide/issues)
 
+Mod已上传至CurseForge，点击[此处](https://www.curseforge.com/minecraft/mc-mods/oxycarbide)查看更多信息 
+
 ## 功能开关一览
 
 | 功能 | 默认 | 开启指令 |
