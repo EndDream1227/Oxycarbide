@@ -16,7 +16,10 @@ It currently supports Fabric on Minecraft 26.3.
 ### Note: the mod is still in an early beta and contains AI-generated content, use with caution!
 
 For more information. plz check out [wiki](https://github.com/EndDream1227/Oxycarbide/wiki/Oxycarbide-Wiki-(English-ver.))
+
 If you have any problems or suggestions, contact me by [issues](https://github.com/EndDream1227/Oxycarbide/issues)
+
+Mod is now available on Curseforge, Click [Here](https://www.curseforge.com/minecraft/mc-mods/oxycarbide) to get
 
 ## Feature overview
 
