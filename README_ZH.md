@@ -9,6 +9,8 @@ Oxycarbide 是面向高版本 Minecraft 服务端的服务器管理模组，为�
 
 ### 提醒：mod暂处于早期beta版本，且包含ai生成内容，请谨慎使用！
 
+更多内容请查看[wiki](https://github.com/EndDream1227/Oxycarbide/wiki/Oxycarbide-Wiki-(CN-Ver.))
+
 ## 功能开关一览
 
 | 功能 | 默认 | 开启指令 |
