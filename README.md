@@ -1,5 +1,9 @@
 # Oxycarbide — All-in-One Server Management
 
+![Minecraft](https://img.shields.io/badge/Minecraft-Java%20Edition-brightgreen)
+![Fabric](https://img.shields.io/badge/Fabric-26.3-orange)
+![License](https://img.shields.io/badge/License-MIT-blue)
+
 **English** | [简体中文](README_ZH.md)
 
 Oxycarbide is a server-management mod for modern Minecraft servers, giving players and
