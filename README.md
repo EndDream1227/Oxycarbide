@@ -14,7 +14,7 @@ market start disabled and can be switched on with commands.
 Most player-facing prompts can be customised through JSON.
 It currently supports Fabric on Minecraft 26.3|26.2|26.1.x|1.21|1.20.
 
-### Note: the mod is still in an early beta and contains AI-generated content, use with caution!
+**Note: the mod is still in an early beta and contains AI-generated content, use with caution!**
 
 For more information. plz check out [wiki](https://github.com/EndDream1227/Oxycarbide/wiki/Oxycarbide-Wiki-(English-ver.))
 
@@ -236,13 +236,15 @@ either mode.
 | --- | --- | --- |
 | `/oxycarbide config promptmode` | everyone | Shows your current prompt position. |
 | `/oxycarbide config promptmode dialog` | everyone | Prompts appear in the chat (default). |
-| `/oxycarbide config promptmode title` | everyone | Prompts appear as a subtitle in the middle of the screen. |
+| `/oxycarbide config promptmode actionbar` | everyone | everyone | Prompts appear as small text just above the hotbar. |
 
 `promptmode` is stored per player (`<world>/oxycarbide_promptmode.json`), does not
-affect other players and survives restarts. In `title` mode, every system message sent
+affect other players and survives restarts. In `actionbar` mode, every system message sent
 to that player (all Oxycarbide prompts, command feedback, join/death notices, ...) is
-shown as a subtitle; messages with clickable buttons (e.g. the TPA accept/deny buttons)
-lose their click action, so `dialog` is recommended for those.
+shown above the hotbar instead of in the chat, in the normal small font, and fades out on
+its own after a few seconds; messages with clickable buttons (e.g. the TPA accept/deny
+buttons) lose their click action, so `dialog` is recommended for those. The old `title`
+value (screen centre subtitle) is still accepted as an alias and is converted on load.
 
 ## License
 
