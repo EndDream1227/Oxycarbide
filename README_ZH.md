@@ -229,12 +229,13 @@ Mod已上传至CurseForge，点击[此处](https://www.curseforge.com/minecraft/
 | --- | --- | --- |
 | `/oxycarbide config promptmode` | 所有人 | 查看自己的提示显示位置。 |
 | `/oxycarbide config promptmode dialog` | 所有人 | 提示显示在聊天框（默认）。 |
-| `/oxycarbide config promptmode title` | 所有人 | 提示显示在屏幕中央的小标题位置。 |
+| `/oxycarbide config promptmode title` | 所有人 | 提示以物品栏上方的小字显示。 |
 
 `promptmode` 按玩家保存（`<世界>/oxycarbide_promptmode.json`），互不影响，重启后
-仍然有效。`title` 模式下，发给该玩家的系统消息（含全部 Oxycarbide 提示、指令回执、
-进服/死亡提示等）都会改为小标题显示；带可点击按钮的消息（如 TPA 的同意/拒绝）会
-失去点击能力，这类场景建议保持 `dialog`。
+仍然有效。`actionbar` 模式下，发给该玩家的系统消息（含全部 Oxycarbide 提示、指令回执、
+进服/死亡提示等）都会改为在物品栏上方以小字显示，几秒后自动淡出；带可点击按钮的消息
+（如 TPA 的同意/拒绝）会失去点击能力，这类场景建议保持 `dialog`。旧的 `title` 值
+（屏幕中央小标题）仍可作为别名使用，并在读取存档时自动转换为 `actionbar`。
 
 ## 许可证
 
