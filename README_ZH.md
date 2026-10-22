@@ -1,7 +1,7 @@
 # Oxycarbide 一站式服务器管理
 
 ![Minecraft](https://img.shields.io/badge/Minecraft-Java%20Edition-brightgreen)
-![Fabric](https://img.shields.io/badge/Fabric-26.3-orange)
+![Fabric](https://img.shields.io/badge/Fabric-26.3%20%7C%201.21.1%20%7C%201.20.1-orange)
 ![License](https://img.shields.io/badge/License-MIT-blue)
 ![CurseForge](https://img.shields.io/badge/curseforge-available%20now-orange)
 
