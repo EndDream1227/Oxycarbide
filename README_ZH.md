@@ -3,6 +3,7 @@
 ![Minecraft](https://img.shields.io/badge/Minecraft-Java%20Edition-brightgreen)
 ![Fabric](https://img.shields.io/badge/Fabric-26.3-orange)
 ![License](https://img.shields.io/badge/License-MIT-blue)
+![CurseForge](https://img.shields.io/badge/curseforge-available%20now-orange)
 
 [English](README.md) | **简体中文**
 
