@@ -5,11 +5,11 @@
 	"name": "oxycarbide",
 	"description": "A mod that provides many practical commands for multiplayer games.",
 	"authors": [
-		"Me!"
+		"EndDream1227"
 	],
 	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"homepage": "https://github.com/EndDream1227/Oxycarbide",
+		"sources": "https://github.com/EndDream1227/Oxycarbide"
 	},
 	"license": "MIT",
 	"icon": "assets/oxycarbide/icon.png",

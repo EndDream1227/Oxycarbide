@@ -74,8 +74,11 @@ public final class ConfigCommands {
 				.executes(ConfigCommands::promptModeStatus)
 				.then(Commands.literal(PromptModes.DIALOG)
 						.executes(context -> setPromptMode(context, PromptModes.DIALOG)))
-				.then(Commands.literal(PromptModes.TITLE)
-						.executes(context -> setPromptMode(context, PromptModes.TITLE)));
+				.then(Commands.literal(PromptModes.ACTIONBAR)
+						.executes(context -> setPromptMode(context, PromptModes.ACTIONBAR)))
+				// Old name of the action bar mode, kept so existing habits still work.
+				.then(Commands.literal(PromptModes.LEGACY_TITLE)
+						.executes(context -> setPromptMode(context, PromptModes.ACTIONBAR)));
 	}
 
 	private static int promptModeStatus(CommandContext<CommandSourceStack> context) {
@@ -89,8 +92,8 @@ public final class ConfigCommands {
 
 		String mode = PromptModes.get().mode(player.getUUID());
 		source.sendSuccess(() -> Component.translatable("oxycarbide.config.promptmode.status",
-				Component.translatable(PromptModes.TITLE.equals(mode)
-						? "oxycarbide.config.promptmode.name_title"
+				Component.translatable(PromptModes.ACTIONBAR.equals(mode)
+						? "oxycarbide.config.promptmode.name_actionbar"
 						: "oxycarbide.config.promptmode.name_dialog")), false);
 		return 1;
 	}
@@ -105,8 +108,8 @@ public final class ConfigCommands {
 		}
 
 		PromptModes.get().set(player.getUUID(), mode);
-		source.sendSuccess(() -> Component.translatable(PromptModes.TITLE.equals(mode)
-				? "oxycarbide.config.promptmode.set_title"
+		source.sendSuccess(() -> Component.translatable(PromptModes.ACTIONBAR.equals(mode)
+				? "oxycarbide.config.promptmode.set_actionbar"
 				: "oxycarbide.config.promptmode.set_dialog"), false);
 		return 1;
 	}

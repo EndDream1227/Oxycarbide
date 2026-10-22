@@ -124,9 +124,9 @@
 
 	"oxycarbide.config.promptmode.status": "当前提示显示位置：%s",
 	"oxycarbide.config.promptmode.name_dialog": "聊天框",
-	"oxycarbide.config.promptmode.name_title": "小标题",
+	"oxycarbide.config.promptmode.name_actionbar": "物品栏上方",
 	"oxycarbide.config.promptmode.set_dialog": "已将提示显示位置切换为聊天框",
-	"oxycarbide.config.promptmode.set_title": "已将提示显示位置切换为小标题",
+	"oxycarbide.config.promptmode.set_actionbar": "已将提示显示位置切换为物品栏上方的小字",
 
 	"oxycarbide.config.home.header": "家功能配置：",
 	"oxycarbide.config.home.status_enabled": "功能状态：已开启",

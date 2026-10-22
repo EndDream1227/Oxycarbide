@@ -10,25 +10,25 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * Reroutes chat messages to the subtitle area for players that picked
- * {@code /oxycarbide config promptmode title}.
+ * Reroutes chat messages to the action bar (the small text above the hotbar) for players
+ * that picked {@code /oxycarbide config promptmode actionbar}.
  */
 @Mixin(ServerPlayer.class)
 public abstract class PromptModeMixin {
 	@Inject(method = "sendSystemMessage(Lnet/minecraft/network/chat/Component;)V",
 			at = @At("HEAD"), cancellable = true)
-	private void oxycarbide$promptAsTitle(Component message, CallbackInfo callback) {
+	private void oxycarbide$promptAsActionBar(Component message, CallbackInfo callback) {
 		if (message == null || message.getString().isBlank()) {
 			return;
 		}
 
 		ServerPlayer player = (ServerPlayer) (Object) this;
 
-		if (!PromptModes.get().isTitle(player.getUUID())) {
+		if (!PromptModes.get().isActionBar(player.getUUID())) {
 			return;
 		}
 
-		if (PromptDisplay.showTitle(player, message)) {
+		if (PromptDisplay.showActionBar(player, message)) {
 			callback.cancel();
 		}
 	}

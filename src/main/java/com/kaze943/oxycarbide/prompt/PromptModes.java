@@ -21,12 +21,15 @@ import java.util.UUID;
  * Per-player choice of where custom prompts are shown, stored in
  * {@code <world>/oxycarbide_promptmode.json}.
  *
- * <p>Only players that picked {@code title} are stored; everybody else uses
+ * <p>Only players that picked {@code actionbar} are stored; everybody else uses
  * {@code dialog} (normal chat).</p>
  */
 public final class PromptModes {
 	public static final String DIALOG = "dialog";
-	public static final String TITLE = "title";
+	/** Prompts are drawn above the hotbar, in the small action bar font. */
+	public static final String ACTIONBAR = "actionbar";
+	/** Old name of {@link #ACTIONBAR}: still accepted by the command and the saved file. */
+	public static final String LEGACY_TITLE = "title";
 
 	private static final PromptModes INSTANCE = new PromptModes();
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
@@ -57,7 +60,9 @@ public final class PromptModes {
 					Files.readString(file, StandardCharsets.UTF_8), FILE_TYPE);
 
 			if (loaded != null) {
-				modes.putAll(loaded);
+				// Files written before the rename stored "title"; migrate them on load.
+				loaded.forEach((player, stored) -> modes.put(player,
+						LEGACY_TITLE.equalsIgnoreCase(stored) ? ACTIONBAR : stored));
 			}
 		} catch (IOException | JsonSyntaxException e) {
 			Oxycarbide.LOGGER.warn("Failed to read prompt modes from {}", file, e);
@@ -81,19 +86,19 @@ public final class PromptModes {
 		modes.clear();
 	}
 
-	/** {@link #DIALOG} or {@link #TITLE}; defaults to {@link #DIALOG}. */
+	/** {@link #DIALOG} or {@link #ACTIONBAR}; defaults to {@link #DIALOG}. */
 	public String mode(UUID player) {
 		String stored = modes.get(player.toString());
-		return stored != null && TITLE.equalsIgnoreCase(stored) ? TITLE : DIALOG;
+		return stored != null && ACTIONBAR.equalsIgnoreCase(stored) ? ACTIONBAR : DIALOG;
 	}
 
-	public boolean isTitle(UUID player) {
-		return TITLE.equals(mode(player));
+	public boolean isActionBar(UUID player) {
+		return ACTIONBAR.equals(mode(player));
 	}
 
 	public void set(UUID player, String mode) {
-		if (TITLE.equalsIgnoreCase(mode)) {
-			modes.put(player.toString(), TITLE);
+		if (ACTIONBAR.equalsIgnoreCase(mode) || LEGACY_TITLE.equalsIgnoreCase(mode)) {
+			modes.put(player.toString(), ACTIONBAR);
 		} else {
 			modes.remove(player.toString());
 		}

@@ -123,9 +123,9 @@
 
 	"oxycarbide.config.promptmode.status": "Current prompt position: %s",
 	"oxycarbide.config.promptmode.name_dialog": "chat",
-	"oxycarbide.config.promptmode.name_title": "subtitle",
+	"oxycarbide.config.promptmode.name_actionbar": "action bar",
 	"oxycarbide.config.promptmode.set_dialog": "Prompts will now be shown in the chat.",
-	"oxycarbide.config.promptmode.set_title": "Prompts will now be shown as a subtitle.",
+	"oxycarbide.config.promptmode.set_actionbar": "Prompts will now be shown above the hotbar.",
 
 	"oxycarbide.config.home.header": "Home settings:",
 	"oxycarbide.config.home.status_enabled": "Feature: enabled",
