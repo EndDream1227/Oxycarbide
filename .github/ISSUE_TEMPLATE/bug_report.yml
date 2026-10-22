@@ -1,0 +1,87 @@
+name: Bug Report
+description: Report a crash, error, or unexpected behavior in Oxycarbide.
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug. Please fill in as much detail as you can.
+        For questions or general help, use Discussions instead of this form.
+
+  - type: input
+    id: mod-version
+    attributes:
+      label: Mod version
+      description: The version shown in the mod list or in the jar file name.
+      placeholder: "e.g. 0.1.0-26.3-fabric"
+    validations:
+      required: true
+
+  - type: input
+    id: mc-version
+    attributes:
+      label: Minecraft version
+      placeholder: "e.g. 26.3"
+    validations:
+      required: true
+
+  - type: input
+    id: loader-version
+    attributes:
+      label: Fabric Loader version
+      placeholder: "e.g. 0.19.5"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: environment
+    attributes:
+      label: Where did the bug happen?
+      options:
+        - Singleplayer
+        - Multiplayer (client side)
+        - Dedicated server
+        - Both client and server
+    validations:
+      required: true
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Describe the bug and what you expected to happen instead.
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Install the mod
+        2. Join a world
+        3. ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs or crash report
+      description: Paste the full log or crash report here. It will be formatted automatically. Write "N/A" if you have none.
+      render: shell
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checklist
+      options:
+        - label: I searched existing issues and this is not a duplicate.
+          required: true
+        - label: I am using the latest version of the mod and Fabric Loader.
+          required: true
+        - label: I removed any personal or sensitive information from the logs.
+          required: true
