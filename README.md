@@ -236,7 +236,7 @@ either mode.
 | --- | --- | --- |
 | `/oxycarbide config promptmode` | everyone | Shows your current prompt position. |
 | `/oxycarbide config promptmode dialog` | everyone | Prompts appear in the chat (default). |
-| `/oxycarbide config promptmode actionbar` | everyone | everyone | Prompts appear as small text just above the hotbar. |
+| `/oxycarbide config promptmode actionbar` | everyone | Prompts appear as small text just above the hotbar. |
 
 `promptmode` is stored per player (`<world>/oxycarbide_promptmode.json`), does not
 affect other players and survives restarts. In `actionbar` mode, every system message sent
