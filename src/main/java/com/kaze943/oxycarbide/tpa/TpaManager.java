@@ -1,6 +1,8 @@
 package com.kaze943.oxycarbide.tpa;
 
 import com.kaze943.oxycarbide.config.OxycarbideConfig;
+import com.kaze943.oxycarbide.prompt.PromptDisplay;
+import com.kaze943.oxycarbide.prompt.PromptModes;
 import com.kaze943.oxycarbide.util.Teleporter;
 import com.kaze943.oxycarbide.util.TextComponents;
 import net.minecraft.ChatFormatting;
@@ -67,7 +69,7 @@ public final class TpaManager {
 		lastRequestTick.put(requester.getUUID(), now);
 
 		requester.sendSystemMessage(TpaTexts.component("request_sent", target.getScoreboardName()));
-		target.sendSystemMessage(incomingMessage(requester.getScoreboardName(), type));
+		notifyTarget(target, requester.getScoreboardName(), type);
 		return true;
 	}
 
@@ -220,6 +222,21 @@ public final class TpaManager {
 		return request;
 	}
 
+	/**
+	 * The accept/deny buttons are clickable text, so a request always goes to the chat:
+	 * the action bar cannot be clicked. Everything else follows the player's prompt mode.
+	 */
+	private void notifyTarget(ServerPlayer target, String requesterName, Type type) {
+		Component message = incomingMessage(requesterName, type);
+
+		if (PromptModes.get().isActionBar(target.getUUID())) {
+			PromptDisplay.sendToChat(target, message);
+			return;
+		}
+
+		target.sendSystemMessage(message);
+	}
+
 	private Component incomingMessage(String requesterName, Type type) {
 		Component acceptButton = TextComponents.clickableCommand("oxycarbide.tpa.accept", "/tpaccept",
 				ChatFormatting.GREEN, "oxycarbide.tpa.accept.hover");
@@ -245,6 +262,7 @@ public final class TpaManager {
 		return Math.max(0, OxycarbideConfig.get().getTpaCooldown() - (server.getTickCount() - last));
 	}
 
+	/** Ticks rounded up to whole seconds, never below one. */
 	private static int seconds(int ticks) {
 		return Math.max(1, (ticks + 19) / 20);
 	}
