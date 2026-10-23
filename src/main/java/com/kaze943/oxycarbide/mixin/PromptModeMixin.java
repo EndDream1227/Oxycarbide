@@ -18,7 +18,7 @@ public abstract class PromptModeMixin {
 	@Inject(method = "sendSystemMessage(Lnet/minecraft/network/chat/Component;)V",
 			at = @At("HEAD"), cancellable = true)
 	private void oxycarbide$promptAsActionBar(Component message, CallbackInfo callback) {
-		if (message == null || message.getString().isBlank()) {
+		if (PromptDisplay.forcedChat() || message == null || message.getString().isBlank()) {
 			return;
 		}
 
