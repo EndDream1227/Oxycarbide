@@ -39,6 +39,7 @@ public final class ClaimCommands {
 
 			dispatcher.register(Commands.literal("claim_transfer")
 					.then(Commands.argument("player", StringArgumentType.word())
+							.suggests(Suggestions.PLAYERS)
 							.executes(ClaimCommands::transfer)));
 
 			dispatcher.register(Commands.literal("disclaim")
@@ -62,18 +63,23 @@ public final class ClaimCommands {
 					.then(Commands.literal("whitelist")
 							.then(Commands.literal("add")
 									.then(Commands.argument("player", StringArgumentType.word())
+											.suggests(Suggestions.PLAYERS)
 											.executes(ClaimCommands::whitelistAdd)))
 							.then(Commands.literal("remove")
 									.then(Commands.argument("player", StringArgumentType.word())
+											.suggests(Suggestions.PLAYERS)
 											.executes(ClaimCommands::whitelistRemove))))
 					.then(Commands.literal("grounded")
 							.then(Commands.argument("value", BoolArgumentType.bool())
+									.suggests(Suggestions.BOOLEANS)
 									.executes(ClaimCommands::setGrounded)))
 					.then(Commands.literal("openToTeam")
 							.then(Commands.argument("value", BoolArgumentType.bool())
+									.suggests(Suggestions.BOOLEANS)
 									.executes(ClaimCommands::setOpenToTeam)))
 					.then(Commands.literal("publicopen")
 							.then(Commands.argument("value", BoolArgumentType.bool())
+									.suggests(Suggestions.BOOLEANS)
 									.executes(ClaimCommands::setPublicOpen))));
 		});
 	}

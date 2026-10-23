@@ -22,10 +22,12 @@ public final class TpaCommands {
 		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
 			dispatcher.register(Commands.literal("tpa")
 					.then(Commands.argument("player", StringArgumentType.word())
+							.suggests(Suggestions.PLAYERS)
 							.executes(context -> send(context, false))));
 
 			dispatcher.register(Commands.literal("tpahere")
 					.then(Commands.argument("player", StringArgumentType.word())
+							.suggests(Suggestions.PLAYERS)
 							.executes(context -> send(context, true))));
 
 			dispatcher.register(Commands.literal("tpaccept").executes(TpaCommands::accept));

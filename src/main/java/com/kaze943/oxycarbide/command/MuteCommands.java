@@ -27,16 +27,19 @@ public final class MuteCommands {
 			dispatcher.register(Commands.literal("mute")
 					.requires(Admins::isAdmin)
 					.then(Commands.argument("player", StringArgumentType.word())
+							.suggests(Suggestions.PLAYERS)
 							.executes(context -> mute(context, false))));
 
 			dispatcher.register(Commands.literal("fmute")
 					.requires(Admins::isAdmin)
 					.then(Commands.argument("player", StringArgumentType.word())
+							.suggests(Suggestions.PLAYERS)
 							.executes(context -> mute(context, true))));
 
 			dispatcher.register(Commands.literal("unmute")
 					.requires(Admins::isAdmin)
 					.then(Commands.argument("player", StringArgumentType.word())
+							.suggests(Suggestions.PLAYERS)
 							.executes(MuteCommands::unmute)));
 		});
 	}

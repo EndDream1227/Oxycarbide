@@ -29,6 +29,7 @@ public final class NicknameCommand {
 			dispatcher.register(Commands.literal("nickfor")
 					.requires(Admins::isAdmin)
 					.then(Commands.argument("player", StringArgumentType.word())
+							.suggests(Suggestions.PLAYERS)
 							.then(Commands.argument("name", StringArgumentType.greedyString())
 									.executes(NicknameCommand::setOtherNickname))));
 		});

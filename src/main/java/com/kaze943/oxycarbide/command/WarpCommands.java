@@ -35,6 +35,7 @@ public final class WarpCommands {
 		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
 			dispatcher.register(Commands.literal("warp")
 					.then(Commands.argument("name", StringArgumentType.word())
+							.suggests(Suggestions.WARPS)
 							.executes(context -> warp(context, StringArgumentType.getString(context, "name")))));
 
 			dispatcher.register(Commands.literal("setwarp")
@@ -43,10 +44,12 @@ public final class WarpCommands {
 
 			dispatcher.register(Commands.literal("delwarp")
 					.then(Commands.argument("name", StringArgumentType.word())
+							.suggests(Suggestions.WARPS)
 							.executes(context -> deleteWarp(context, StringArgumentType.getString(context, "name")))));
 
 			dispatcher.register(Commands.literal("renamewarp")
 					.then(Commands.argument("old", StringArgumentType.word())
+							.suggests(Suggestions.WARPS)
 							.then(Commands.argument("new", StringArgumentType.word())
 									.executes(context -> renameWarp(context,
 											StringArgumentType.getString(context, "old"),

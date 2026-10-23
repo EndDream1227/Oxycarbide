@@ -37,10 +37,12 @@ public final class HomeCommands {
 
 			dispatcher.register(Commands.literal("delhome")
 					.then(Commands.argument("name", StringArgumentType.word())
+							.suggests(Suggestions.HOMES)
 							.executes(context -> deleteHome(context, StringArgumentType.getString(context, "name")))));
 
 			dispatcher.register(Commands.literal("home")
 					.then(Commands.argument("name", StringArgumentType.word())
+							.suggests(Suggestions.HOMES)
 							.executes(context -> teleportHome(context, StringArgumentType.getString(context, "name")))));
 
 			dispatcher.register(Commands.literal("listhome")
@@ -50,7 +52,9 @@ public final class HomeCommands {
 			dispatcher.register(Commands.literal("opdelhome")
 					.requires(Admins::isAdmin)
 					.then(Commands.argument("home", StringArgumentType.word())
+							.suggests(Suggestions.ALL_HOMES)
 							.then(Commands.argument("player", StringArgumentType.word())
+									.suggests(Suggestions.PLAYERS)
 									.executes(context -> deleteHomeOfPlayer(context,
 											StringArgumentType.getString(context, "home"),
 											StringArgumentType.getString(context, "player"))))));

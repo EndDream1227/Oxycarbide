@@ -28,6 +28,7 @@ public final class ShopCommands {
 			dispatcher.register(Commands.literal("shop")
 					.executes(ShopCommands::openDefault)
 					.then(Commands.argument("id", StringArgumentType.word())
+							.suggests(Suggestions.SHOPS)
 							.executes(ShopCommands::open)));
 
 			dispatcher.register(Commands.literal("shop_create")
@@ -40,6 +41,7 @@ public final class ShopCommands {
 					.requires(Admins::isAdmin)
 					.then(Commands.literal("default")
 							.then(Commands.argument("id", StringArgumentType.word())
+									.suggests(Suggestions.SHOPS)
 									.executes(ShopCommands::setDefault))));
 
 			dispatcher.register(Commands.literal("shoplist")

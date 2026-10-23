@@ -31,17 +31,20 @@ public final class MarketCommands {
 
 			dispatcher.register(Commands.literal("sell")
 					.then(Commands.argument("currency", StringArgumentType.word())
+							.suggests(Suggestions.CURRENCIES)
 							.then(Commands.argument("price", LongArgumentType.longArg(1))
 									.then(Commands.argument("time", StringArgumentType.word())
 											.executes(MarketCommands::sell)))));
 
 			dispatcher.register(Commands.literal("pull")
 					.then(Commands.argument("id", StringArgumentType.word())
+							.suggests(Suggestions.MARKET_IDS)
 							.executes(MarketCommands::pull)));
 
 			dispatcher.register(Commands.literal("spull")
 					.requires(Admins::isAdmin)
 					.then(Commands.argument("id", StringArgumentType.word())
+							.suggests(Suggestions.MARKET_IDS)
 							.executes(MarketCommands::forcePull)));
 		});
 	}

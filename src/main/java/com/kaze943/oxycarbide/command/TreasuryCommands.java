@@ -34,17 +34,20 @@ public final class TreasuryCommands {
 			dispatcher.register(Commands.literal("addtreasury")
 					.requires(Admins::isAdmin)
 					.then(Commands.argument("player", StringArgumentType.word())
+							.suggests(Suggestions.PLAYERS)
 							.then(Commands.argument("amount", LongArgumentType.longArg(1))
 									.executes(TreasuryCommands::add))));
 
 			dispatcher.register(Commands.literal("cutreasury")
 					.requires(Admins::isAdmin)
 					.then(Commands.argument("player", StringArgumentType.word())
+							.suggests(Suggestions.PLAYERS)
 							.then(Commands.argument("amount", LongArgumentType.longArg(1))
 									.executes(TreasuryCommands::cut))));
 
 			dispatcher.register(Commands.literal("transfer_treasury")
 					.then(Commands.argument("player", StringArgumentType.word())
+							.suggests(Suggestions.PLAYERS)
 							.then(Commands.argument("amount", LongArgumentType.longArg(1))
 									.executes(TreasuryCommands::transfer))));
 

@@ -2,6 +2,7 @@ package com.kaze943.oxycarbide.command;
 
 import com.kaze943.oxycarbide.config.OxycarbideConfig;
 import com.kaze943.oxycarbide.prompt.PromptModes;
+import com.kaze943.oxycarbide.reload.ReloadService;
 import com.kaze943.oxycarbide.util.Admins;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.DoubleArgumentType;
@@ -55,7 +56,8 @@ public final class ConfigCommands {
 								.then(marketNode())
 								.then(sweepNode())
 								.then(smartSweepNode())
-								.then(promptModeNode()))
+								.then(promptModeNode())
+								.then(reloadNode()))
 						.then(Commands.literal("rule")
 								.executes(ConfigCommands::ruleStatus)
 								.then(ruleNode(RULE_CREATE))
@@ -79,6 +81,51 @@ public final class ConfigCommands {
 				// Old name of the action bar mode, kept so existing habits still work.
 				.then(Commands.literal(PromptModes.LEGACY_TITLE)
 						.executes(context -> setPromptMode(context, PromptModes.ACTIONBAR)));
+	}
+
+	private static LiteralArgumentBuilder<CommandSourceStack> reloadNode() {
+		return Commands.literal("reload")
+				.executes(ConfigCommands::reloadStatus)
+				.then(Commands.literal("server")
+						.requires(Admins::isAdmin)
+						.executes(ConfigCommands::reloadServer))
+				.then(Commands.literal("client")
+						.executes(ConfigCommands::reloadClient));
+	}
+
+	private static int reloadStatus(CommandContext<CommandSourceStack> context) {
+		CommandSourceStack source = context.getSource();
+
+		source.sendSuccess(() -> Component.translatable("oxycarbide.reload.header"), false);
+		source.sendSuccess(() -> Component.translatable("oxycarbide.reload.server_hint"), false);
+		source.sendSuccess(() -> Component.translatable("oxycarbide.reload.client_hint"), false);
+		return 1;
+	}
+
+	private static int reloadServer(CommandContext<CommandSourceStack> context) {
+		CommandSourceStack source = context.getSource();
+		int files = ReloadService.reloadServer(source.getServer());
+
+		source.sendSuccess(() -> Component.translatable("oxycarbide.reload.server_done", files), true);
+		return 1;
+	}
+
+	private static int reloadClient(CommandContext<CommandSourceStack> context) {
+		CommandSourceStack source = context.getSource();
+		ServerPlayer player = source.getPlayer();
+
+		if (player == null) {
+			source.sendFailure(Component.translatable("oxycarbide.player_only"));
+			return 0;
+		}
+
+		if (!ReloadService.reloadClient(player)) {
+			source.sendFailure(Component.translatable("oxycarbide.reload.client_unavailable"));
+			return 0;
+		}
+
+		source.sendSuccess(() -> Component.translatable("oxycarbide.reload.client_done"), false);
+		return 1;
 	}
 
 	private static int promptModeStatus(CommandContext<CommandSourceStack> context) {
@@ -124,6 +171,7 @@ public final class ConfigCommands {
 				.then(Commands.literal("switch")
 						.requires(Admins::isAdmin)
 						.then(Commands.argument("value", BoolArgumentType.bool())
+								.suggests(Suggestions.BOOLEANS)
 								.executes(ConfigCommands::setHomeSwitch)));
 	}
 
@@ -137,6 +185,7 @@ public final class ConfigCommands {
 				.then(Commands.literal("switch")
 						.requires(Admins::isAdmin)
 						.then(Commands.argument("value", BoolArgumentType.bool())
+								.suggests(Suggestions.BOOLEANS)
 								.executes(ConfigCommands::setWarpSwitch)));
 	}
 
@@ -146,6 +195,7 @@ public final class ConfigCommands {
 				.then(Commands.literal("switch")
 						.requires(Admins::isAdmin)
 						.then(Commands.argument("value", BoolArgumentType.bool())
+								.suggests(Suggestions.BOOLEANS)
 								.executes(ConfigCommands::setSpawnSwitch)));
 	}
 
@@ -155,6 +205,7 @@ public final class ConfigCommands {
 				.then(Commands.literal("switch")
 						.requires(Admins::isAdmin)
 						.then(Commands.argument("value", BoolArgumentType.bool())
+								.suggests(Suggestions.BOOLEANS)
 								.executes(ConfigCommands::setBackSwitch)));
 	}
 
@@ -180,6 +231,7 @@ public final class ConfigCommands {
 				.then(Commands.literal("switch")
 						.requires(Admins::isAdmin)
 						.then(Commands.argument("value", BoolArgumentType.bool())
+								.suggests(Suggestions.BOOLEANS)
 								.executes(ConfigCommands::setRtpSwitch)));
 	}
 
@@ -201,6 +253,7 @@ public final class ConfigCommands {
 				.then(Commands.literal("switch")
 						.requires(Admins::isAdmin)
 						.then(Commands.argument("value", BoolArgumentType.bool())
+								.suggests(Suggestions.BOOLEANS)
 								.executes(ConfigCommands::setTpaSwitch)));
 	}
 
@@ -210,6 +263,7 @@ public final class ConfigCommands {
 				.then(Commands.literal("switch")
 						.requires(Admins::isAdmin)
 						.then(Commands.argument("value", BoolArgumentType.bool())
+								.suggests(Suggestions.BOOLEANS)
 								.executes(ConfigCommands::setKickMeSwitch)));
 	}
 
@@ -219,6 +273,7 @@ public final class ConfigCommands {
 				.then(Commands.literal("switch")
 						.requires(Admins::isAdmin)
 						.then(Commands.argument("value", BoolArgumentType.bool())
+								.suggests(Suggestions.BOOLEANS)
 								.executes(ConfigCommands::setNicknameSwitch)));
 	}
 
@@ -232,6 +287,7 @@ public final class ConfigCommands {
 				.then(Commands.literal("switch")
 						.requires(Admins::isAdmin)
 						.then(Commands.argument("value", BoolArgumentType.bool())
+								.suggests(Suggestions.BOOLEANS)
 								.executes(ConfigCommands::setMuteSwitch)));
 	}
 
@@ -241,6 +297,7 @@ public final class ConfigCommands {
 				.then(Commands.literal("switch")
 						.requires(Admins::isAdmin)
 						.then(Commands.argument("value", BoolArgumentType.bool())
+								.suggests(Suggestions.BOOLEANS)
 								.executes(ConfigCommands::setTrashcanSwitch)));
 	}
 
@@ -264,6 +321,7 @@ public final class ConfigCommands {
 				.then(Commands.literal("switch")
 						.requires(Admins::isAdmin)
 						.then(Commands.argument("value", BoolArgumentType.bool())
+								.suggests(Suggestions.BOOLEANS)
 								.executes(ConfigCommands::setLoginSwitch)));
 	}
 
@@ -281,6 +339,7 @@ public final class ConfigCommands {
 				.then(Commands.literal("switch")
 						.requires(Admins::isAdmin)
 						.then(Commands.argument("value", BoolArgumentType.bool())
+								.suggests(Suggestions.BOOLEANS)
 								.executes(ConfigCommands::setTreasurySwitch)));
 	}
 
@@ -290,6 +349,7 @@ public final class ConfigCommands {
 				.then(Commands.literal("value")
 						.requires(Admins::isAdmin)
 						.then(Commands.argument("currency", StringArgumentType.word())
+								.suggests(Suggestions.CURRENCIES)
 								.then(Commands.argument("amount", LongArgumentType.longArg(0))
 										.executes(ConfigCommands::setClaimValue))))
 				.then(Commands.literal("maxnum")
@@ -303,6 +363,7 @@ public final class ConfigCommands {
 				.then(Commands.literal("switch")
 						.requires(Admins::isAdmin)
 						.then(Commands.argument("value", BoolArgumentType.bool())
+								.suggests(Suggestions.BOOLEANS)
 								.executes(ConfigCommands::setClaimSwitch)));
 	}
 
@@ -312,6 +373,7 @@ public final class ConfigCommands {
 				.then(Commands.literal("switch")
 						.requires(Admins::isAdmin)
 						.then(Commands.argument("value", BoolArgumentType.bool())
+								.suggests(Suggestions.BOOLEANS)
 								.executes(ConfigCommands::setShopSwitch)))
 				.then(Commands.literal("default_time")
 						.requires(Admins::isAdmin)
@@ -325,6 +387,7 @@ public final class ConfigCommands {
 				.then(Commands.literal("switch")
 						.requires(Admins::isAdmin)
 						.then(Commands.argument("value", BoolArgumentType.bool())
+								.suggests(Suggestions.BOOLEANS)
 								.executes(ConfigCommands::setMarketSwitch)));
 	}
 
@@ -334,6 +397,7 @@ public final class ConfigCommands {
 				.then(Commands.literal("switch")
 						.requires(Admins::isAdmin)
 						.then(Commands.argument("value", BoolArgumentType.bool())
+								.suggests(Suggestions.BOOLEANS)
 								.executes(ConfigCommands::setSweepSwitch)))
 				.then(Commands.literal("time")
 						.requires(Admins::isAdmin)
@@ -356,10 +420,12 @@ public final class ConfigCommands {
 				.then(Commands.literal("delwhitelist")
 						.requires(Admins::isAdmin)
 						.then(Commands.argument("value", StringArgumentType.word())
+								.suggests(Suggestions.SWEEP_WHITELIST)
 								.executes(ConfigCommands::removeSweepWhitelist)))
 				.then(Commands.literal("smartsweep")
 						.requires(Admins::isAdmin)
 						.then(Commands.argument("value", BoolArgumentType.bool())
+								.suggests(Suggestions.BOOLEANS)
 								.executes(ConfigCommands::setSmartSweep)));
 	}
 
@@ -385,6 +451,7 @@ public final class ConfigCommands {
 		return Commands.literal(rule)
 				.requires(Admins::isAdmin)
 				.then(Commands.argument("value", BoolArgumentType.bool())
+						.suggests(Suggestions.BOOLEANS)
 						.executes(context -> setRule(context, rule)));
 	}
 

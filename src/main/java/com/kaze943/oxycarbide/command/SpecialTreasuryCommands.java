@@ -38,20 +38,26 @@ public final class SpecialTreasuryCommands {
 			dispatcher.register(Commands.literal("add_sptreasury")
 					.requires(Admins::isAdmin)
 					.then(Commands.argument("currency", StringArgumentType.word())
+							.suggests(Suggestions.CURRENCIES)
 							.then(Commands.argument("player", StringArgumentType.word())
+									.suggests(Suggestions.PLAYERS)
 									.then(Commands.argument("amount", LongArgumentType.longArg(1))
 											.executes(SpecialTreasuryCommands::add)))));
 
 			dispatcher.register(Commands.literal("cut_sptreasury")
 					.requires(Admins::isAdmin)
 					.then(Commands.argument("currency", StringArgumentType.word())
+							.suggests(Suggestions.CURRENCIES)
 							.then(Commands.argument("player", StringArgumentType.word())
+									.suggests(Suggestions.PLAYERS)
 									.then(Commands.argument("amount", LongArgumentType.longArg(1))
 											.executes(SpecialTreasuryCommands::cut)))));
 
 			dispatcher.register(Commands.literal("transfer_sptreasury")
 					.then(Commands.argument("currency", StringArgumentType.word())
+							.suggests(Suggestions.CURRENCIES)
 							.then(Commands.argument("player", StringArgumentType.word())
+									.suggests(Suggestions.PLAYERS)
 									.then(Commands.argument("amount", LongArgumentType.longArg(1))
 											.executes(SpecialTreasuryCommands::transfer)))));
 		});

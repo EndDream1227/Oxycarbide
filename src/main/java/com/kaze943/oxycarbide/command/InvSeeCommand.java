@@ -25,6 +25,7 @@ public final class InvSeeCommand {
 				dispatcher.register(Commands.literal("invsee")
 						.requires(Admins::isAdmin)
 						.then(Commands.argument("player", StringArgumentType.word())
+								.suggests(Suggestions.PLAYERS)
 								.executes(InvSeeCommand::open))));
 	}
 
