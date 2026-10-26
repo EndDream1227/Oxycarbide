@@ -12,13 +12,7 @@ Oxycarbide 是面向高版本 Minecraft 服务端的服务器管理模组，为�
 大部分面向玩家的提示都可以通过 JSON 自定义。
 现兼容Fabric MC26.3|26.2|26.1.x|1.21|1.20版本。
 
-### 提醒：mod暂处于早期beta版本，且包含ai生成内容，请谨慎使用！
-
-更多内容请查看[wiki](https://github.com/EndDream1227/Oxycarbide/wiki/Oxycarbide-Wiki-(CN-Ver.))
-
-若发现任何功能性问题，或是要提出建议，请提交[issues](https://github.com/EndDream1227/Oxycarbide/issues)
-
-Mod已上传至CurseForge，点击[此处](https://www.curseforge.com/minecraft/mc-mods/oxycarbide)查看更多信息 
+** 提醒：mod暂处于早期beta版本，且包含ai生成内容，请谨慎使用！ **
 
 ## 功能开关一览
 
@@ -33,12 +27,21 @@ Mod已上传至CurseForge，点击[此处](https://www.curseforge.com/minecraft/
 | 经济（金币 + 特殊货币） | 关 | `/oxycarbide config treasury switch true` |
 | 区块申领 | 关 | `/oxycarbide config claim switch true` |
 | 商店 GUI | 关 | `/oxycarbide config shop switch true` |
+| 菜单 GUI | 开 | `/oxycarbide config menu switch true` |
+| 侧边栏（记分板） | 关 | `/oxycarbide config scoreboard switch true` |
+| 称号 | 开 | `/oxycarbide config titles switch true` |
 | 全球市场 | 关 | `/oxycarbide config market switch true` |
 
 关闭某个功能后，它的全部指令都会回复“该功能已关闭”，不会执行任何操作。各模块执行
 `/oxycarbide config <模块>`（不带参数）可以查看当前配置。
 
 权限说明：`管理员` 指权限等级 2（OP），`所有人` 指任意玩家，`所有者` 指资源创建者。
+
+所有需要填写已有对象的参数都可以用 `Tab` 补全：`/tpa`、`/mute`、`/addtreasury` 等补全
+在线玩家名；`/home`、`/delhome` 补全自己的家名称；`/warp` 补全地标名；`/shop` 补全商店
+id；`/menu`、`/menu_default` 补全菜单 id；`/pull` 补全市场挂单 id；`/sell` 补全货币名；
+所有 `switch` 与规则补全 `true`/`false`；`delwhitelist` 补全清扫白名单；`/opdelhome`
+补全全服的家名称。
 
 ## 指令
 
@@ -180,6 +183,63 @@ Mod已上传至CurseForge，点击[此处](https://www.curseforge.com/minecraft/
 | `/oxycarbide config shop default_time <分钟>` | 管理员 | `/sell` 中 `~` 对应的时长，默认 `180`。 |
 | `/oxycarbide config market switch <true\|false>` | 管理员 | 全球市场开关，默认关。 |
 
+### 菜单
+
+菜单同样是纯 JSON 驱动的箱子界面：每个按钮要么以点击者的身份执行一条指令，要么
+跳转到另一个菜单页面。文件放在 `config/oxycarbide/menu/`，制作方法见
+[菜单界面 JSON](#菜单界面-json)。
+
+| 指令 | 权限 | 说明 |
+| --- | --- | --- |
+| `/menu` | 所有人 | 打开默认菜单。 |
+| `/menu <id>` | 所有人 | 打开指定菜单。 |
+| `/menu_default <id>` | 管理员 | 设置裸 `/menu` 打开的菜单。 |
+| `/menu_create [id]` | 管理员 | 创建一个空白菜单；`id` 填 `~` 或不填时随机生成。 |
+| `/menu_list` | 管理员 | 列出已加载的菜单。 |
+| `/menu_reload` | 管理员 | 重新读取菜单文件。 |
+| `/oxycarbide config menu switch <true\|false>` | 管理员 | 菜单功能开关，默认开。 |
+
+文件名就是菜单 id；首次启动会自动生成 `example.json`，可以直接复制它来改。按钮以
+**点击者本人**的权限执行，所以菜单不会让普通玩家获得额外权限。关闭菜单功能后，`/menu`
+会回复"该功能已关闭"，但文件管理指令（`/menu_create`、`/menu_default`、`/menu_list`、
+`/menu_reload`）仍然可用。
+
+### 侧边栏
+
+侧边栏是按玩家独立显示的记分板，内容由 `config/oxycarbide/scoreboard/scoreboard.json`
+描述，制作方法见 [侧边栏 JSON](#侧边栏-json)。默认关闭，且完全不会创建或修改原版
+`/scoreboard` 的记分项。
+
+| 指令 | 权限 | 说明 |
+| --- | --- | --- |
+| `/oxycarbide scoreboard` | 所有人 | 查看侧边栏是否开启、行数以及刷新间隔。 |
+| `/oxycarbide scoreboard reload` | 管理员 | 重新读取 `scoreboard.json`。 |
+| `/oxycarbide scoreboard counter set <计数器> <玩家> <数值>` | 管理员 | 设置 `custom` 行使用的自定义计数器。 |
+| `/oxycarbide scoreboard counter add <计数器> <玩家> <数值>` | 管理员 | 在自定义计数器上加减（负数即减少）。 |
+| `/oxycarbide config scoreboard switch <true\|false>` | 管理员 | 侧边栏功能开关，默认关。 |
+| `/oxycarbide rule DisplayOfflinePlayerScoreboard <true\|false>` | 管理员 | 侧边栏榜单是否也显示离线玩家，默认 `false`。 |
+
+### 称号
+
+称号是显示在玩家名字前面的彩色前缀，聊天栏和头顶名字都会显示。称号同样是纯 JSON
+（`config/oxycarbide/title/titles.json`，见 [称号 JSON](#称号-json)），完全**不使用**
+原版 team 功能：聊天前缀来自显示名，头顶名字用的是实体的自定义名称。
+
+指令放在 `/titles` 而不是 `/title`：原版的 `/title` 是屏幕标题指令，占用同名根节点要么会
+把原版指令顶掉，要么会继承它"仅管理员"的要求（那样 `/titles wear` 普通玩家就用不了）。
+
+| 指令 | 权限 | 说明 |
+| --- | --- | --- |
+| `/titles` | 所有人 | 查看自己当前佩戴的称号。 |
+| `/titles create <文本> <颜色> <id>` | 管理员 | 创建称号；`id` 填 `~` 自动生成，`文本` 含空格时用引号。 |
+| `/titles get <id> [玩家]` | 管理员 | 把称号发给自己，或发给指定玩家。 |
+| `/titles wear <id>` | 所有人 | 佩戴自己已获得的称号，只补全已获得的 id。 |
+| `/titles clear` | 所有人 | 取消佩戴称号。 |
+| `/oxycarbide config titles switch <true\|false>` | 管理员 | 称号功能开关，默认开。 |
+
+商店也可以卖称号：用 `command` 类型的商品、指令写 `/titles get vip %player%`，购买后就会
+以服务端权限替买家执行这条管理员指令，详见 [商店界面 JSON](#商店界面-json)。
+
 ### 区块申领
 
 | 指令 | 权限 | 说明 |
@@ -229,13 +289,55 @@ Mod已上传至CurseForge，点击[此处](https://www.curseforge.com/minecraft/
 | --- | --- | --- |
 | `/oxycarbide config promptmode` | 所有人 | 查看自己的提示显示位置。 |
 | `/oxycarbide config promptmode dialog` | 所有人 | 提示显示在聊天框（默认）。 |
-| `/oxycarbide config promptmode title` | 所有人 | 提示以物品栏上方的小字显示。 |
+| `/oxycarbide config promptmode actionbar` | 所有人 | 提示以物品栏上方的小字显示。 |
+| `/oxycarbide reload` | 所有人 | 查看两种重载方式的作用。 |
+| `/oxycarbide reload server` | 管理员 | 重新读取 `config/oxycarbide.json`、所有语言文件、商店与菜单文件。 |
+| `/oxycarbide reload client` | 所有人 | 让自己的游戏重载本地资源（等同 `F3 + T`）。 |
 
 `promptmode` 按玩家保存（`<世界>/oxycarbide_promptmode.json`），互不影响，重启后
 仍然有效。`actionbar` 模式下，发给该玩家的系统消息（含全部 Oxycarbide 提示、指令回执、
-进服/死亡提示等）都会改为在物品栏上方以小字显示，几秒后自动淡出；带可点击按钮的消息
-（如 TPA 的同意/拒绝）会失去点击能力，这类场景建议保持 `dialog`。旧的 `title` 值
-（屏幕中央小标题）仍可作为别名使用，并在读取存档时自动转换为 `actionbar`。
+进服/死亡提示等）都会改为在物品栏上方以小字显示，几秒后自动淡出。唯一的例外是传送请求：
+`/tpa` 与 `/tpahere` 始终发到聊天框，因为绿色的**同意**与红色的**拒绝**按钮是可点击文本，
+而物品栏上方的小字无法点击。旧的 `title` 值（屏幕中央小标题）仍可作为别名使用，并在读取
+存档时自动转换为 `actionbar`。
+
+`reload server` 不需要重启服务器，改完文本或配置后用它即可立即生效；它会重载设置文件、
+每种语言的 19 个文本文件、商店与菜单文件以及每位玩家的提示显示模式。`reload client`
+只影响执行者自己的游戏，并且要求该客户端也安装了 oxycarbide（仅装在服务端时会提示客户端
+没有可重载的内容）。
+
+## 自定义文本教程
+
+所有面向玩家的提示都放在配置目录中，首次启动会自动生成；你只需要修改 JSON 里的
+**值**，不要改键名。
+
+## 数据文件
+
+| 路径 | 内容 |
+| --- | --- |
+| `config/oxycarbide.json` | 全部功能配置（亦可游戏内修改）。 |
+| `config/oxycarbide/lang/<语言>/*_text.json` | 自定义文本。 |
+| `config/oxycarbide/shop/config/<id>.json` | 商店界面。 |
+| `config/oxycarbide/menu/<id>.json` | 菜单界面。 |
+| `config/oxycarbide/scoreboard/scoreboard.json` | 侧边栏布局。 |
+| `config/oxycarbide/title/titles.json` | 称号定义。 |
+| `config/oxycarbide/globalshop_default.json` | 全球市场装饰布局。 |
+| `<世界>/oxycarbide_homes.json` | 家园。 |
+| `<世界>/oxycarbide_warps.json` | 地标。 |
+| `<世界>/oxycarbide_nicknames.json` | 昵称。 |
+| `<世界>/oxycarbide_mutes.json` | 禁言。 |
+| `<世界>/oxycarbide_lastplayer.json` | 最近玩家位置（`/telepoint_last`）。 |
+| `<世界>/oxycarbide_accounts.json` | 登录账号。 |
+| `<世界>/oxycarbide_treasury.json` | 金币账户。 |
+| `<世界>/oxycarbide_sptreasury.json` | 特殊货币。 |
+| `<世界>/oxycarbide_claims.json` | 区块申领。 |
+| `<世界>/oxycarbide_counters.json` | 侧边栏的自定义计数器。 |
+| `<世界>/oxycarbide_titles.json` | 已获得与正在佩戴的称号。 |
+| `<世界>/oxycarbide_market.json` | 全球市场挂单。 |
+| `<世界>/oxycarbide_market_pending.json` | 待领取的市场返还物品。 |
+| `<世界>/oxycarbide_promptmode.json` | 每名玩家的提示显示位置。 |
+
+备份时请同时备份配置目录与世界存档中的以上文件。
 
 ## 许可证
 
