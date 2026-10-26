@@ -12,15 +12,9 @@ admins a large set of practical commands and features.
 Most features are enabled by default; login, economy, chunk claims, shops and the global
 market start disabled and can be switched on with commands.
 Most player-facing prompts can be customised through JSON.
-It currently supports Fabric on Minecraft 26.3|26.2|26.1.x|1.21|1.20.
+It currently supports Fabric on Minecraft 26.3.
 
-**Note: the mod is still in an early beta and contains AI-generated content, use with caution!**
-
-For more information. plz check out [wiki](https://github.com/EndDream1227/Oxycarbide/wiki/Oxycarbide-Wiki-(English-ver.))
-
-If you have any problems or suggestions, contact me by [issues](https://github.com/EndDream1227/Oxycarbide/issues)
-
-Mod is now available on Curseforge, Click [Here](https://www.curseforge.com/minecraft/mc-mods/oxycarbide) to get
+### Note: the mod is still in an early beta and contains AI-generated content, use with caution!
 
 ## Feature overview
 
@@ -35,6 +29,9 @@ Mod is now available on Curseforge, Click [Here](https://www.curseforge.com/mine
 | Economy (coins + special currencies) | off | `/oxycarbide config treasury switch true` |
 | Chunk claims | off | `/oxycarbide config claim switch true` |
 | Shop GUI | off | `/oxycarbide config shop switch true` |
+| Menu GUI | on | `/oxycarbide config menu switch true` |
+| Sidebar (scoreboard) | off | `/oxycarbide config scoreboard switch true` |
+| Titles | on | `/oxycarbide config titles switch true` |
 | Global market | off | `/oxycarbide config market switch true` |
 
 While a feature is disabled, all of its commands answer with "this feature is disabled"
@@ -43,6 +40,14 @@ settings of that module.
 
 Permissions: *admin* means permission level 2 (OP), *everyone* means any player, and
 *owner* means the player who created the resource.
+
+Every argument that names an existing object can be filled in with `Tab`: online player
+names for `/tpa`, `/mute`, `/addtreasury`, ...; your own home names for `/home` and
+`/delhome`; warp names for `/warp`; shop ids for `/shop`; menu ids for `/menu` and
+`/menu_default`; listing ids for `/pull`; currency names for `/sell`; `true`/`false` for
+every `switch` and rule; the sweep whitelist for `delwhitelist`; title ids for
+`/titles get` and the titles you own for `/titles wear`; home names of the whole server for
+`/opdelhome`.
 
 ## Commands
 
@@ -186,6 +191,67 @@ see [Shop GUI JSON](#shop-gui-json).
 | `/oxycarbide config shop default_time <minutes>` | admin | Duration used by `~` in `/sell`, default `180`. |
 | `/oxycarbide config market switch <true\|false>` | admin | Enables or disables the global market, default off. |
 
+### Menus
+
+Menus are JSON-driven chest GUIs: every button either runs a command as the clicking
+player or opens another menu page. The files live in `config/oxycarbide/menu/`, see
+[Menu GUI JSON](#menu-gui-json).
+
+| Command | Permission | Description |
+| --- | --- | --- |
+| `/menu` | everyone | Opens the default menu. |
+| `/menu <id>` | everyone | Opens the given menu. |
+| `/menu_default <id>` | admin | Sets the menu opened by a bare `/menu`. |
+| `/menu_create [id]` | admin | Creates an empty menu; `~` (or no id) generates a random id. |
+| `/menu_list` | admin | Lists every loaded menu. |
+| `/menu_reload` | admin | Reloads the menu files. |
+| `/oxycarbide config menu switch <true\|false>` | admin | Enables or disables menus, default on. |
+
+The file name is the menu id; the first start writes `example.json`, which is a good file
+to copy. Buttons run with the permissions of the player that clicks them, so a menu can
+never give a normal player more rights than they already have. While menus are disabled,
+`/menu` answers "this feature is disabled"; the file management commands
+(`/menu_create`, `/menu_default`, `/menu_list`, `/menu_reload`) keep working.
+
+### Sidebar
+
+The sidebar is a per-player scoreboard built from
+`config/oxycarbide/scoreboard/scoreboard.json`; see
+[Scoreboard sidebar JSON](#scoreboard-sidebar-json). It is off by default, and it never
+creates or changes vanilla `/scoreboard` objectives.
+
+| Command | Permission | Description |
+| --- | --- | --- |
+| `/oxycarbide scoreboard` | everyone | Shows whether the sidebar is on, its line count and refresh interval. |
+| `/oxycarbide scoreboard reload` | admin | Re-reads `scoreboard.json`. |
+| `/oxycarbide scoreboard counter set <counter> <player> <value>` | admin | Sets a custom counter used by `custom` lines. |
+| `/oxycarbide scoreboard counter add <counter> <player> <amount>` | admin | Adds to a custom counter (a negative number subtracts). |
+| `/oxycarbide config scoreboard switch <true\|false>` | admin | Enables or disables the sidebar, default off. |
+| `/oxycarbide rule DisplayOfflinePlayerScoreboard <true\|false>` | admin | Also lists offline players in the sidebar lists, default `false`. |
+
+### Titles
+
+A title is a coloured prefix in front of the player name, both in the chat and above the
+player's head. Titles are plain JSON (`config/oxycarbide/title/titles.json`, see
+[Title JSON](#title-json)) and do not use the vanilla team feature at all: the chat prefix
+comes from the display name and the name tag is the entity's custom name.
+
+The commands live under `/titles`, not `/title`: vanilla already owns `/title` for screen
+titles, and registering over it would either replace that command or inherit its operator
+requirement (which would lock players out of `/titles wear`).
+
+| Command | Permission | Description |
+| --- | --- | --- |
+| `/titles` | everyone | Shows the title you are wearing. |
+| `/titles create <text> <color> <id>` | admin | Creates a title; `~` as id generates one, `text` may be quoted. |
+| `/titles get <id> [player]` | admin | Gives the title to you, or to another player. |
+| `/titles wear <id>` | everyone | Wears a title you own; only owned ids are suggested. |
+| `/titles clear` | everyone | Stops wearing a title. |
+| `/oxycarbide config titles switch <true\|false>` | admin | Enables or disables titles, default on. |
+
+Shops can sell titles: a `command` item with `"command": "/titles get vip %player%"` runs
+the operator command for the buyer, see [Shop GUI JSON](#shop-gui-json).
+
 ### Chunk claims
 
 | Command | Permission | Description |
@@ -237,14 +303,57 @@ either mode.
 | `/oxycarbide config promptmode` | everyone | Shows your current prompt position. |
 | `/oxycarbide config promptmode dialog` | everyone | Prompts appear in the chat (default). |
 | `/oxycarbide config promptmode actionbar` | everyone | Prompts appear as small text just above the hotbar. |
+| `/oxycarbide reload` | everyone | Shows what the two reload variants do. |
+| `/oxycarbide reload server` | admin | Re-reads `config/oxycarbide.json`, every language file and the shop files. |
+| `/oxycarbide reload client` | everyone | Asks your own game to reload its local resources (like `F3 + T`). |
 
 `promptmode` is stored per player (`<world>/oxycarbide_promptmode.json`), does not
 affect other players and survives restarts. In `actionbar` mode, every system message sent
 to that player (all Oxycarbide prompts, command feedback, join/death notices, ...) is
 shown above the hotbar instead of in the chat, in the normal small font, and fades out on
-its own after a few seconds; messages with clickable buttons (e.g. the TPA accept/deny
-buttons) lose their click action, so `dialog` is recommended for those. The old `title`
-value (screen centre subtitle) is still accepted as an alias and is converted on load.
+its own after a few seconds. The one exception is a teleport request: `/tpa` and
+`/tpahere` always arrive in the chat, because the green **accept** and red **deny**
+buttons are clickable text and the action bar cannot be clicked. The old `title` value
+(screen centre subtitle) is still accepted as an alias and is converted on load.
+
+`reload server` never needs a restart, so it is the fast way to apply edited texts or
+settings; it reloads the settings file, the 19 text files of every language, the shop and
+menu files and the per-player prompt modes. `reload client` only touches the game of the
+player who ran it, and needs oxycarbide installed on that client as well (a server-only
+install answers that the client has nothing to reload).
+
+## Custom messages
+
+All player-facing prompts live in the config directory and are generated on first
+start. Only change the **values** in the JSON, not the keys.
+
+## Data files
+
+| Path | Contents |
+| --- | --- |
+| `config/oxycarbide.json` | All feature settings (also editable in game). |
+| `config/oxycarbide/lang/<language>/*_text.json` | Custom messages. |
+| `config/oxycarbide/shop/config/<id>.json` | Shop GUIs. |
+| `config/oxycarbide/menu/<id>.json` | Menus. |
+| `config/oxycarbide/scoreboard/scoreboard.json` | Sidebar layout. |
+| `config/oxycarbide/title/titles.json` | Titles. |
+| `config/oxycarbide/globalshop_default.json` | Global market decoration layout. |
+| `<world>/oxycarbide_homes.json` | Homes. |
+| `<world>/oxycarbide_warps.json` | Warps. |
+| `<world>/oxycarbide_nicknames.json` | Nicknames. |
+| `<world>/oxycarbide_mutes.json` | Mutes. |
+| `<world>/oxycarbide_lastplayer.json` | Last player position (`/telepoint_last`). |
+| `<world>/oxycarbide_accounts.json` | Login accounts. |
+| `<world>/oxycarbide_treasury.json` | Coin accounts. |
+| `<world>/oxycarbide_sptreasury.json` | Special currencies. |
+| `<world>/oxycarbide_claims.json` | Chunk claims. |
+| `<world>/oxycarbide_counters.json` | Custom counters of the sidebar. |
+| `<world>/oxycarbide_titles.json` | Owned and worn titles. |
+| `<world>/oxycarbide_market.json` | Global market listings. |
+| `<world>/oxycarbide_market_pending.json` | Pending market returns. |
+| `<world>/oxycarbide_promptmode.json` | Per-player prompt position. |
+
+Back up both the config directory and the files above inside the world save.
 
 ## License
 
