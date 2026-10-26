@@ -9,12 +9,14 @@ import com.kaze943.oxycarbide.command.KickMeCommands;
 import com.kaze943.oxycarbide.command.LoginAdminCommands;
 import com.kaze943.oxycarbide.command.LoginCommand;
 import com.kaze943.oxycarbide.command.MarketCommands;
+import com.kaze943.oxycarbide.command.MenuCommands;
 import com.kaze943.oxycarbide.command.MuteCommands;
 import com.kaze943.oxycarbide.command.NicknameCommand;
 import com.kaze943.oxycarbide.command.ShopCommands;
 import com.kaze943.oxycarbide.command.SpecialTreasuryCommands;
 import com.kaze943.oxycarbide.command.SweepCommands;
 import com.kaze943.oxycarbide.command.TeleportLastCommand;
+import com.kaze943.oxycarbide.command.TitleCommands;
 import com.kaze943.oxycarbide.command.TpaCommands;
 import com.kaze943.oxycarbide.command.TrashcanCommand;
 import com.kaze943.oxycarbide.command.TravelCommands;
@@ -30,6 +32,8 @@ import com.kaze943.oxycarbide.home.HomeTexts;
 import com.kaze943.oxycarbide.market.MarketManager;
 import com.kaze943.oxycarbide.market.MarketService;
 import com.kaze943.oxycarbide.market.MarketTexts;
+import com.kaze943.oxycarbide.menu.MenuManager;
+import com.kaze943.oxycarbide.menu.MenuTexts;
 import com.kaze943.oxycarbide.sweep.SweepManager;
 import com.kaze943.oxycarbide.sweep.SweepTexts;
 import com.kaze943.oxycarbide.login.LoginManager;
@@ -39,6 +43,7 @@ import com.kaze943.oxycarbide.mute.MuteManager;
 import com.kaze943.oxycarbide.mute.MuteTexts;
 import com.kaze943.oxycarbide.nickname.NicknameManager;
 import com.kaze943.oxycarbide.nickname.NicknameTexts;
+import com.kaze943.oxycarbide.network.ClientReloadPayload;
 import com.kaze943.oxycarbide.prompt.PromptModes;
 import com.kaze943.oxycarbide.tpa.TpaManager;
 import com.kaze943.oxycarbide.tpa.TpaTexts;
@@ -54,12 +59,18 @@ import com.kaze943.oxycarbide.treasury.TreasuryManager;
 import com.kaze943.oxycarbide.treasury.TreasuryTexts;
 import com.kaze943.oxycarbide.shop.ShopManager;
 import com.kaze943.oxycarbide.shop.ShopTexts;
+import com.kaze943.oxycarbide.sidebar.CounterManager;
+import com.kaze943.oxycarbide.sidebar.SidebarManager;
+import com.kaze943.oxycarbide.sidebar.SidebarTexts;
+import com.kaze943.oxycarbide.title.TitleTexts;
+import com.kaze943.oxycarbide.title.TitlesManager;
 import com.kaze943.oxycarbide.warp.WarpManager;
 import com.kaze943.oxycarbide.warp.WarpTexts;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
@@ -81,6 +92,9 @@ public class Oxycarbide implements ModInitializer {
 		// Settings first: the command handlers read the limits and rules at execution time.
 		OxycarbideConfig.load();
 
+		// The only packet we send: "reload your local resources", used by /oxycarbide reload client.
+		PayloadTypeRegistry.clientboundPlay().register(ClientReloadPayload.TYPE, ClientReloadPayload.CODEC);
+
 		HomeCommands.register();
 		WarpCommands.register();
 		TravelCommands.register();
@@ -94,11 +108,13 @@ public class Oxycarbide implements ModInitializer {
 		TreasuryCommands.register();
 		SpecialTreasuryCommands.register();
 		ShopCommands.register();
+		MenuCommands.register();
 		MarketCommands.register();
 		SweepCommands.register();
 		ClaimCommands.register();
 		LoginCommand.register();
 		LoginAdminCommands.register();
+		TitleCommands.register();
 		HatCommands.register();
 		ConfigCommands.register();
 
@@ -126,10 +142,15 @@ public class Oxycarbide implements ModInitializer {
 			TreasuryManager.get().ensureAccount(handler.getPlayer().getUUID(), handler.getPlayer().getScoreboardName());
 			// Items refunded while the player was offline are handed back on join.
 			MarketService.get().deliverPending(handler.getPlayer());
+			// The sidebar is per player, so it is drawn as soon as the player is in game.
+			SidebarManager.get().onJoin(handler.getPlayer());
+			// Titles are shown above the head through the entity's custom name.
+			TitlesManager.get().refreshNameTag(handler.getPlayer());
 		});
 		ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
 			LastPlayerTracker.get().update(handler.getPlayer());
 			LoginManager.get().onDisconnect(handler.getPlayer());
+			SidebarManager.get().onQuit(handler.getPlayer());
 		});
 
 		// Login sessions are frozen and timed out on the server tick.
@@ -138,6 +159,8 @@ public class Oxycarbide implements ModInitializer {
 		ServerTickEvents.END_SERVER_TICK.register(ClaimManager.get()::tick);
 		// Automatic and smart sweeps are driven from the server tick.
 		ServerTickEvents.END_SERVER_TICK.register(SweepManager.get()::tick);
+		// The sidebar is rebuilt on its own schedule, see update_ticks in scoreboard.json.
+		ServerTickEvents.END_SERVER_TICK.register(SidebarManager.get()::tick);
 
 		// Homes and warps live in the world save, so they are loaded once the world is
 		// ready and written back when the server stops.
@@ -153,6 +176,12 @@ public class Oxycarbide implements ModInitializer {
 			SpecialCurrencyManager.get().load(server);
 			ClaimManager.get().load(server);
 			ShopManager.get().load();
+			MenuManager.get().load();
+			TitlesManager.get().load(server);
+			TitleTexts.load();
+			SidebarTexts.load();
+			SidebarManager.get().load();
+			CounterManager.get().load(server);
 			MarketManager.get().load(server);
 			PromptModes.get().load(server);
 			HomeTexts.load();
@@ -169,6 +198,7 @@ public class Oxycarbide implements ModInitializer {
 			RtpTexts.load();
 			ClaimTexts.load();
 			ShopTexts.load();
+			MenuTexts.load();
 			MarketTexts.load();
 			SweepTexts.load();
 		});
@@ -184,6 +214,8 @@ public class Oxycarbide implements ModInitializer {
 			ClaimManager.get().save();
 			MarketManager.get().save();
 			PromptModes.get().save();
+			CounterManager.get().save();
+			TitlesManager.get().save();
 			BackPoints.clear();
 			RtpManager.get().clear();
 			TpaManager.get().clear();
@@ -191,6 +223,7 @@ public class Oxycarbide implements ModInitializer {
 			SpecialCurrencyManager.get().clear();
 			ClaimManager.get().clear();
 			PromptModes.get().clear();
+			SidebarManager.get().clearState();
 		});
 
 		LOGGER.info("Oxycarbide loaded");

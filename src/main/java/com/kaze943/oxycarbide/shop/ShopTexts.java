@@ -16,14 +16,16 @@ public final class ShopTexts {
 			"buy_insufficient", "余额不足，需要 %s %s",
 			"inventory_full", "背包已满，物品已掉落在脚下",
 			"sell_success", "已出售 %s 个「%s」，获得 %s %s",
-			"sell_missing", "背包中没有足够的「%s」（需要 %s 个）");
+			"sell_missing", "背包中没有足够的「%s」（需要 %s 个）",
+			"command_success", "已购买「%s」，相关指令已执行");
 
 	private static final Map<String, String> DEFAULT_EN = JsonTexts.defaults(
 			"buy_success", "Bought %s \"%s\" for %s %s.",
 			"buy_insufficient", "Not enough money, you need %s %s.",
 			"inventory_full", "Your inventory is full, the item was dropped at your feet.",
 			"sell_success", "Sold %s \"%s\" for %s %s.",
-			"sell_missing", "You don't have enough \"%s\" (need %s).");
+			"sell_missing", "You don't have enough \"%s\" (need %s).",
+			"command_success", "Purchased \"%s\" and the command has been run.");
 
 	private static final JsonTexts TEXTS = new JsonTexts("shop_text.json", DEFAULT_ZH, DEFAULT_EN);
 

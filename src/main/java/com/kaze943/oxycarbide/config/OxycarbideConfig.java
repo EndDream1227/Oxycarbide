@@ -69,6 +69,11 @@ public final class OxycarbideConfig {
 	private boolean onlyOpPlayerClaim = true;
 	private String shopDefaultId = "";
 	private boolean shopEnabled = false;
+	private String menuDefaultId = "";
+	private boolean menuEnabled = true;
+	private boolean sidebarEnabled = false;
+	private boolean displayOfflinePlayerScoreboard = false;
+	private boolean titlesEnabled = true;
 	private boolean marketEnabled = false;
 	private int marketDefaultMinutes = 180;
 
@@ -525,6 +530,53 @@ public final class OxycarbideConfig {
 
 	public void setShopEnabled(boolean enabled) {
 		this.shopEnabled = enabled;
+		save();
+	}
+
+	/** Menu id opened by a bare {@code /menu}; empty when none is configured. */
+	public String getMenuDefaultId() {
+		return menuDefaultId;
+	}
+
+	public void setMenuDefaultId(String id) {
+		this.menuDefaultId = id == null ? "" : id.trim();
+		save();
+	}
+
+	public boolean isMenuEnabled() {
+		return menuEnabled;
+	}
+
+	public void setMenuEnabled(boolean enabled) {
+		this.menuEnabled = enabled;
+		save();
+	}
+
+	public boolean isSidebarEnabled() {
+		return sidebarEnabled;
+	}
+
+	public void setSidebarEnabled(boolean enabled) {
+		this.sidebarEnabled = enabled;
+		save();
+	}
+
+	/** Rule {@code DisplayOfflinePlayerScoreboard}: also list offline players in the sidebar. */
+	public boolean isDisplayOfflinePlayerScoreboard() {
+		return displayOfflinePlayerScoreboard;
+	}
+
+	public void setDisplayOfflinePlayerScoreboard(boolean value) {
+		this.displayOfflinePlayerScoreboard = value;
+		save();
+	}
+
+	public boolean isTitlesEnabled() {
+		return titlesEnabled;
+	}
+
+	public void setTitlesEnabled(boolean enabled) {
+		this.titlesEnabled = enabled;
 		save();
 	}
 

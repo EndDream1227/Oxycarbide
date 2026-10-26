@@ -3,6 +3,8 @@ package com.kaze943.oxycarbide.command;
 import com.kaze943.oxycarbide.config.OxycarbideConfig;
 import com.kaze943.oxycarbide.prompt.PromptModes;
 import com.kaze943.oxycarbide.reload.ReloadService;
+import com.kaze943.oxycarbide.sidebar.SidebarManager;
+import com.kaze943.oxycarbide.title.TitlesManager;
 import com.kaze943.oxycarbide.util.Admins;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.DoubleArgumentType;
@@ -31,6 +33,7 @@ public final class ConfigCommands {
 	private static final String RULE_SP_TRANSFER = "allowPlayerTranSPTreasury";
 	private static final String RULE_CLAIM = "OnlyOpPlayerClaim";
 	private static final String RULE_SILENT_SWEEP = "slienceSweep";
+	private static final String RULE_OFFLINE_SCOREBOARD = "DisplayOfflinePlayerScoreboard";
 
 	private ConfigCommands() {
 	}
@@ -53,9 +56,12 @@ public final class ConfigCommands {
 								.then(treasuryNode())
 								.then(claimNode())
 								.then(shopNode())
+								.then(menuNode())
 								.then(marketNode())
 								.then(sweepNode())
 								.then(smartSweepNode())
+								.then(scoreboardNode())
+								.then(titlesNode())
 								.then(promptModeNode())
 								.then(reloadNode()))
 						.then(Commands.literal("rule")
@@ -68,7 +74,9 @@ public final class ConfigCommands {
 								.then(ruleNode(RULE_SPECIAL))
 								.then(ruleNode(RULE_SP_TRANSFER))
 								.then(ruleNode(RULE_CLAIM))
-								.then(ruleNode(RULE_SILENT_SWEEP)))));
+								.then(ruleNode(RULE_SILENT_SWEEP))
+								.then(ruleNode(RULE_OFFLINE_SCOREBOARD)))
+						.then(SidebarCommands.node())));
 	}
 
 	private static LiteralArgumentBuilder<CommandSourceStack> promptModeNode() {
@@ -381,8 +389,113 @@ public final class ConfigCommands {
 								.executes(ConfigCommands::setMarketDefaultTime)));
 	}
 
-	private static LiteralArgumentBuilder<CommandSourceStack> marketNode() {
-		return Commands.literal("market")
+	private static LiteralArgumentBuilder<CommandSourceStack> menuNode() {
+		return Commands.literal("menu")
+				.executes(ConfigCommands::menuStatus)
+				.then(Commands.literal("switch")
+						.requires(Admins::isAdmin)
+						.then(Commands.argument("value", BoolArgumentType.bool())
+								.suggests(Suggestions.BOOLEANS)
+								.executes(ConfigCommands::setMenuSwitch)));
+	}
+
+	private static int menuStatus(CommandContext<CommandSourceStack> context) {
+		CommandSourceStack source = context.getSource();
+		OxycarbideConfig config = OxycarbideConfig.get();
+
+		source.sendSuccess(() -> Component.translatable("oxycarbide.config.menu.header"), false);
+		source.sendSuccess(() -> Component.translatable(config.isMenuEnabled()
+				? "oxycarbide.config.menu.status_enabled"
+				: "oxycarbide.config.menu.status_disabled"), false);
+		source.sendSuccess(() -> Component.translatable("oxycarbide.config.menu.default_status",
+				config.getMenuDefaultId().isBlank()
+						? Component.translatable("oxycarbide.config.menu.default_none")
+						: Component.literal(config.getMenuDefaultId())), false);
+		return 1;
+	}
+
+	private static int setMenuSwitch(CommandContext<CommandSourceStack> context) {
+		CommandSourceStack source = context.getSource();
+		boolean enabled = BoolArgumentType.getBool(context, "value");
+
+		OxycarbideConfig.get().setMenuEnabled(enabled);
+		source.sendSuccess(() -> Component.translatable(enabled
+				? "oxycarbide.config.menu.switch_on"
+				: "oxycarbide.config.menu.switch_off"), true);
+		return 1;
+	}
+
+	private static LiteralArgumentBuilder<CommandSourceStack> scoreboardNode() {
+		return Commands.literal("scoreboard")
+				.executes(ConfigCommands::scoreboardStatus)
+				.then(Commands.literal("switch")
+						.requires(Admins::isAdmin)
+						.then(Commands.argument("value", BoolArgumentType.bool())
+								.suggests(Suggestions.BOOLEANS)
+								.executes(ConfigCommands::setScoreboardSwitch)));
+	}
+
+	private static int scoreboardStatus(CommandContext<CommandSourceStack> context) {
+		CommandSourceStack source = context.getSource();
+		OxycarbideConfig config = OxycarbideConfig.get();
+
+		source.sendSuccess(() -> Component.translatable("oxycarbide.config.scoreboard.header"), false);
+		source.sendSuccess(() -> Component.translatable(config.isSidebarEnabled()
+				? "oxycarbide.config.scoreboard.status_enabled"
+				: "oxycarbide.config.scoreboard.status_disabled"), false);
+		source.sendSuccess(() -> Component.translatable("oxycarbide.config.scoreboard.lines_status",
+				SidebarManager.get().settings().lines.size()), false);
+		source.sendSuccess(() -> Component.translatable("oxycarbide.config.scoreboard.update_status",
+				SidebarManager.get().settings().updateTicks), false);
+		return 1;
+	}
+
+	private static int setScoreboardSwitch(CommandContext<CommandSourceStack> context) {
+		CommandSourceStack source = context.getSource();
+		boolean enabled = BoolArgumentType.getBool(context, "value");
+
+		OxycarbideConfig.get().setSidebarEnabled(enabled);
+		source.sendSuccess(() -> Component.translatable(enabled
+				? "oxycarbide.config.scoreboard.switch_on"
+				: "oxycarbide.config.scoreboard.switch_off"), true);
+		return 1;
+	}
+
+	private static LiteralArgumentBuilder<CommandSourceStack> titlesNode() {
+		return Commands.literal("titles")
+				.executes(ConfigCommands::titlesStatus)
+				.then(Commands.literal("switch")
+						.requires(Admins::isAdmin)
+						.then(Commands.argument("value", BoolArgumentType.bool())
+								.suggests(Suggestions.BOOLEANS)
+								.executes(ConfigCommands::setTitlesSwitch)));
+	}
+
+	private static int titlesStatus(CommandContext<CommandSourceStack> context) {
+		CommandSourceStack source = context.getSource();
+		OxycarbideConfig config = OxycarbideConfig.get();
+
+		source.sendSuccess(() -> Component.translatable("oxycarbide.config.titles.header"), false);
+		source.sendSuccess(() -> Component.translatable(config.isTitlesEnabled()
+				? "oxycarbide.config.titles.status_enabled"
+				: "oxycarbide.config.titles.status_disabled"), false);
+		source.sendSuccess(() -> Component.translatable("oxycarbide.config.titles.count_status",
+				TitlesManager.get().all().size()), false);
+		return 1;
+	}
+
+	private static int setTitlesSwitch(CommandContext<CommandSourceStack> context) {
+		CommandSourceStack source = context.getSource();
+		boolean enabled = BoolArgumentType.getBool(context, "value");
+
+		OxycarbideConfig.get().setTitlesEnabled(enabled);
+		source.sendSuccess(() -> Component.translatable(enabled
+				? "oxycarbide.config.titles.switch_on"
+				: "oxycarbide.config.titles.switch_off"), true);
+		return 1;
+	}
+
+	private static LiteralArgumentBuilder<CommandSourceStack> marketNode() {		return Commands.literal("market")
 				.executes(ConfigCommands::marketStatus)
 				.then(Commands.literal("switch")
 						.requires(Admins::isAdmin)
@@ -1146,6 +1259,7 @@ public final class ConfigCommands {
 		sendRule(source, RULE_SP_TRANSFER, config.isAllowPlayerTranSPTreasury());
 		sendRule(source, RULE_CLAIM, config.isOnlyOpPlayerClaim());
 		sendRule(source, RULE_SILENT_SWEEP, config.isSilentSweep());
+		sendRule(source, RULE_OFFLINE_SCOREBOARD, config.isDisplayOfflinePlayerScoreboard());
 		return 1;
 	}
 
@@ -1163,6 +1277,7 @@ public final class ConfigCommands {
 			case RULE_SPECIAL -> config.setAllowSpecialCurrency(value);
 			case RULE_CLAIM -> config.setOnlyOpPlayerClaim(value);
 			case RULE_SILENT_SWEEP -> config.setSilentSweep(value);
+			case RULE_OFFLINE_SCOREBOARD -> config.setDisplayOfflinePlayerScoreboard(value);
 			case RULE_SP_TRANSFER -> config.setAllowPlayerTranSPTreasury(value);
 			default -> {
 				return 0;

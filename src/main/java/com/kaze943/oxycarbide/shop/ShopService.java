@@ -1,8 +1,10 @@
 package com.kaze943.oxycarbide.shop;
 
+import com.kaze943.oxycarbide.Oxycarbide;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.SimpleMenuProvider;
@@ -87,7 +89,7 @@ public final class ShopService {
 
 		String type = definition.typeLower();
 
-		if (("buy".equals(type) || "sell".equals(type)) && definition.price > 0) {
+		if (("buy".equals(type) || "sell".equals(type) || "command".equals(type)) && definition.price > 0) {
 			lore.add(Component.translatable("oxycarbide.shop.price",
 					definition.price, com.kaze943.oxycarbide.config.OxycarbideConfig.get().getCurrencyName()));
 		}
@@ -114,6 +116,7 @@ public final class ShopService {
 		switch (definition.typeLower()) {
 			case "buy" -> buy(player, definition);
 			case "sell" -> sell(player, definition);
+			case "command", "cmd" -> buyCommand(player, definition);
 			case "redirect" -> redirect(player, definition);
 			default -> {
 				// placeholder: no reaction
@@ -171,6 +174,51 @@ public final class ShopService {
 
 		player.sendSystemMessage(ShopTexts.component("sell_success",
 				amount, label(definition), price, labelOf(currency)));
+	}
+
+	/**
+	 * Buys a command: the price is taken, then the command runs with server permissions.
+	 * {@code %player%} in the command becomes the buyer's name, which is how a shop can
+	 * sell {@code /title get <id> %player%} to normal players.
+	 */
+	private void buyCommand(ServerPlayer player, ShopItemDefinition definition) {
+		String raw = definition.command == null ? "" : definition.command.trim();
+
+		if (raw.isEmpty()) {
+			return;
+		}
+
+		String currency = currencyOf(definition);
+
+		if (!ensureCurrency(player, currency)) {
+			return;
+		}
+
+		long price = Math.max(0L, definition.price);
+
+		if (balanceOf(player, currency) < price) {
+			player.sendSystemMessage(ShopTexts.component("buy_insufficient", price, labelOf(currency)));
+			return;
+		}
+
+		takeMoney(player, currency, price);
+		String command = raw.replace("%player%", player.getScoreboardName());
+
+		if (command.startsWith("/")) {
+			command = command.substring(1);
+		}
+
+		MinecraftServer server = player.level().getServer();
+
+		if (server != null && !command.isBlank()) {
+			try {
+				server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), command);
+			} catch (RuntimeException e) {
+				Oxycarbide.LOGGER.warn("Shop command /{} failed for {}", command, player.getScoreboardName(), e);
+			}
+		}
+
+		player.sendSystemMessage(ShopTexts.component("command_success", label(definition)));
 	}
 
 	private static String currencyOf(ShopItemDefinition definition) {

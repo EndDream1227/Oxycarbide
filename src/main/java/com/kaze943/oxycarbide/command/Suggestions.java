@@ -4,8 +4,12 @@ import com.kaze943.oxycarbide.config.OxycarbideConfig;
 import com.kaze943.oxycarbide.home.HomeManager;
 import com.kaze943.oxycarbide.market.MarketListing;
 import com.kaze943.oxycarbide.market.MarketManager;
+import com.kaze943.oxycarbide.menu.MenuDefinition;
+import com.kaze943.oxycarbide.menu.MenuManager;
 import com.kaze943.oxycarbide.shop.ShopDefinition;
 import com.kaze943.oxycarbide.shop.ShopManager;
+import com.kaze943.oxycarbide.sidebar.CounterManager;
+import com.kaze943.oxycarbide.title.TitlesManager;
 import com.kaze943.oxycarbide.treasury.SpecialCurrencyManager;
 import com.kaze943.oxycarbide.warp.Warp;
 import com.kaze943.oxycarbide.warp.WarpManager;
@@ -47,6 +51,22 @@ public final class Suggestions {
 
 	public static final SuggestionProvider<CommandSourceStack> SHOPS =
 			(context, builder) -> suggest(builder, shopIds());
+
+	public static final SuggestionProvider<CommandSourceStack> MENUS =
+			(context, builder) -> suggest(builder, menuIds());
+
+	public static final SuggestionProvider<CommandSourceStack> COUNTERS =
+			(context, builder) -> suggest(builder, CounterManager.get().names());
+
+	/** Every title id, for {@code /title get}. */
+	public static final SuggestionProvider<CommandSourceStack> TITLES =
+			(context, builder) -> suggest(builder, TitlesManager.get().ids());
+
+	/** The titles the executing player owns, for {@code /title wear}. */
+	public static final SuggestionProvider<CommandSourceStack> OWNED_TITLES = (context, builder) -> {
+		ServerPlayer player = context.getSource().getPlayer();
+		return suggest(builder, player == null ? List.of() : TitlesManager.get().ownedIds(player.getUUID()));
+	};
 
 	public static final SuggestionProvider<CommandSourceStack> MARKET_IDS =
 			(context, builder) -> suggest(builder, marketIds());
@@ -111,6 +131,16 @@ public final class Suggestions {
 
 		for (ShopDefinition shop : ShopManager.get().all()) {
 			ids.add(shop.id);
+		}
+
+		return ids;
+	}
+
+	private static List<String> menuIds() {
+		List<String> ids = new ArrayList<>();
+
+		for (MenuDefinition menu : MenuManager.get().all()) {
+			ids.add(menu.id);
 		}
 
 		return ids;

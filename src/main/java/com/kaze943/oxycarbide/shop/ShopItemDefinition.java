@@ -18,7 +18,7 @@ public final class ShopItemDefinition {
 	public String name = "";
 	public List<String> lore = new ArrayList<>();
 
-	/** {@code buy}, {@code sell}, {@code redirect} or {@code placeholder}. */
+	/** {@code buy}, {@code sell}, {@code redirect}, {@code command} or {@code placeholder}. */
 	public String type = "placeholder";
 
 	/** Traded item id, used by buy/sell. */
@@ -32,6 +32,13 @@ public final class ShopItemDefinition {
 
 	/** Target shop id for {@code redirect}. */
 	public String target = "";
+
+	/**
+	 * Command run after a successful purchase, for {@code command}. It runs with server
+	 * permissions, so normal players can buy access to an operator command; {@code %player%}
+	 * is replaced with the buyer's name.
+	 */
+	public String command = "";
 
 	public String typeLower() {
 		return type == null ? "placeholder" : type.toLowerCase(java.util.Locale.ROOT);
