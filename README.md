@@ -14,7 +14,7 @@ market start disabled and can be switched on with commands.
 Most player-facing prompts can be customised through JSON.
 It currently supports Fabric on Minecraft 26.3|26.2|26.1.x|1.21|1.20.
 
-### Note: the mod is still in an early beta and contains AI-generated content, use with caution!
+**Note: the mod is still in an early beta and contains AI-generated content, use with caution!**
 
 ## Feature overview
 
